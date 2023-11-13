@@ -78,7 +78,10 @@ def horn_problem(A, B, C, auto = False):
         Q1, Q2 = point[0], point[1]
         A_mod = basis_change(A_eigs, Q1)
         B_mod = basis_change(B_eigs, Q2)
-        h = inner_product(A_mod, C_eigs) + inner_product(B_mod, C_eigs) + inner_product(A_mod, B_mod)
+        norm_A2 = inner_product(A, A)
+        norm_B2 = inner_product(B, B)
+        norm_C2 = inner_product(C, C)
+        h = .5 * (norm_A2 + norm_B2 + norm_C2) + inner_product(A_mod, C_eigs) + inner_product(B_mod, C_eigs) + inner_product(A_mod, B_mod)
         return h
     
     # Riemannian gradient of the cost function
@@ -102,11 +105,25 @@ def horn_problem(A, B, C, auto = False):
 def prob_non_solvable_1(N = 4, epsilon = 1):
     # Setting non-solvable problem
     A = np.eye(N)
-    epsilon = 1
     B = np.random.rand(N, N)
     B = .5 * (B + B.T)
     b, eigv_b = np.linalg.eig(B)
     C = -((1 + epsilon) * np.eye(N) + np.diag(b))
+    # Setting the problem
+    problem = horn_problem(A, B, C)
+    problem.eps_non_solvable = epsilon
+    return problem
+
+def prob_non_solvable_2(N = 4):
+    # Setting non-solvable problem
+    # We just set A, B, C randomly, as the probability that the problem 
+    # is solvable in that case is 0.
+    A = np.random.rand(N, N)
+    B = np.random.rand(N, N)
+    C = np.random.rand(N, N)
+    A = .5 * (A + A.T)
+    B = .5 * (B + B.T)
+    C = .5 * (C + C.T)
     # Setting the problem
     problem = horn_problem(A, B, C)
     return problem
