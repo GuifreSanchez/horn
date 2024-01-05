@@ -1,0 +1,14 @@
+Gradient check...
+Directional derivative check. The slope of the continuous line should match that of the dashed (reference) line over at least a few orders of magnitude for h.
+The residual should be 0, or very close. Residual: 0.
+If it is far from 0, then the gradient is not in the tangent space.
+Hessian check...
+Hessian check. The slope of the continuous line should match that of the dashed (reference) line over at least a few orders of magnitude for h.
+The residual should be 0, or very close. Residual: 0.
+If it is far from 0, then the Hessian is not in the tangent space.
+
+The norm of the residual between H[a*d1 + b*d2] and a*H[d1] + b*H[d2] should be very close to 0: 2.13453e-15.
+If it is far from 0, then the Hessian is not a linear operator.
+
+The difference <d1, H[d2]> - <H[d1], d2> should be close to zero: 0.184417 - 0.184417 = 1.38778e-16.
+If it is far from 0 then the Hessian is not a symmetric operator.

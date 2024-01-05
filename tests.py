@@ -1,5 +1,7 @@
 from examples import *
+from pymanopt.tools.diagnostics import check_gradient, check_hessian
 import problems
+import plot_style
 
 TEST_TOL = 1e-10
 
@@ -51,6 +53,23 @@ def problem_vs_example(N = 6, tol = TEST_TOL):
         return False
     print("All cost values match. problem.py = ", result1.cost, " example.py = ", res_cost_manual2)
     return True
+
+def check_grad_hess(rand_data = True, N = 10, A = None, B = None, C = None):
+    if rand_data:
+        A = np.random.rand(N, N)
+        B = np.random.rand(N, N)
+        C = np.random.rand(N, N)
+        
+        A = 0.5 * (A + A.T)
+        B = 0.5 * (B + B.T)
+        C = 0.5 * (C + C.T)
+    
+    horn = problems.horn_problem(A, B, C)
+    print("Gradient check...")
+    check_gradient(horn)
+    print("Hessian check...")
+    check_hessian(horn)
+    
     
 
     
