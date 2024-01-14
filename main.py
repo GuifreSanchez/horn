@@ -81,23 +81,23 @@ if RUN_EXPERIMENTS:
     experiments.exp_basic_solvable(Ns = Ns, ns = ns)
     
     
-tests.check_grad_hess()
+# tests.check_grad_hess()
 
-print("Example of random solvable case")
-Ns = [10]
-ns = [25]
-N = Ns[0]
-#experiments.exp_basic_solvable(Ns = Ns, ns = ns)
-basic_prob = prob.prob_basic_solvable(N = N)
-experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adjust_scale=True)
+# print("Example of random solvable case")
+# Ns = [10]
+# ns = [25]
+# N = Ns[0]
+# #experiments.exp_basic_solvable(Ns = Ns, ns = ns)
+# basic_prob = prob.prob_basic_solvable(N = N)
+# experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adjust_scale=True)
 
-print("Example of random non-solvable case")
-Ns = [10]
-ns = [25]
-N = Ns[0]
-#experiments.exp_basic_solvable(Ns = Ns, ns = ns)
-basic_prob = prob.prob_non_solvable_2(N= N)
-experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adjust_scale=True)
+# print("Example of random non-solvable case")
+# Ns = [10]
+# ns = [25]
+# N = Ns[0]
+# #experiments.exp_basic_solvable(Ns = Ns, ns = ns)
+# basic_prob = prob.prob_non_solvable_2(N= N)
+# experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adjust_scale=True)
 
 # print("Example of random non-solvable case")
 # Ns = [5]
@@ -263,10 +263,10 @@ experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adju
 
 #     expected_cost_2 = np.sum(a * b) + .5 * (norm2(A) + norm2(B) + norm2(C)) + Delta * min_ab
 #     expected_cost_3 = np.sum(a * b) + .5 * (norm2(A) + norm2(B) + norm2(C)) + Delta * min_a_min_b
-#     print("Expected cost 1", expected_cost_2)
-#     print("Expected cost 2", expected_cost_3)
-#     print("Expected cost perms", expected_cost_4)
-#     print("Expected cost convex", expected_cost_5)
+#     # print("Expected cost 1", expected_cost_2)
+#     # print("Expected cost 2", expected_cost_3)
+#     # print("Expected cost perms", expected_cost_4)
+#     # print("Expected cost convex", expected_cost_5)
 #     #print(point)
 #     print("a, b, c used")
 #     print(a)
@@ -321,21 +321,21 @@ experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adju
 #     convex_a_b_test = (cost_test - norms_const - inn_test) / Delta
 #     inn_abc_test = inner_product(A_mod + B_mod, C)
 #     inn_abc_run = inner_product(A1 + B2, C)
-#     print("scalar products....")
-#     print(inn_test, inn_run, npsum)
-#     print(inn_abc_test, inn_abc_run)
-#     print("convex combinations....")
-#     print(convex_a_b_test, convex_a_b_run)
-#     print("full costs...")
-#     print(problem_.cost(point))
-#     print(problem_.cost(results.point))
+#     # print("scalar products....")
+#     # print(inn_test, inn_run, npsum)
+#     # print(inn_abc_test, inn_abc_run)
+#     # print("convex combinations....")
+#     # print(convex_a_b_test, convex_a_b_run)
+#     # print("full costs...")
+#     # print(problem_.cost(point))
+#     # print(problem_.cost(results.point))
 #     C = problem_.data[2]
 
 #     print(opt_a)
 #     print(opt_b)
-#     print(results.point[0]@results.point[1].T)
-#     print(results.point[0])
-#     print(results.point[1])
+#     # print(results.point[0]@results.point[1].T)
+#     # print(results.point[0])
+#     # print(results.point[1])
 #     print(opt_a + opt_b)
 #     test2 = .25 * np.sum(a + b + c)**2
 #     print(test2)
@@ -375,16 +375,7 @@ experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adju
 # delta_b = delta_a + np.random.randint(10)
 # a = np.array([1, delta_a - 1])
 # b = np.array([1, delta_b - 1])
-# special(a, b, N = 5, Delta = 1.0 , random_ = True)
-
-
-
-
-
-
-
-
-
+# special(a, b, N = 2, Delta = .5 * (delta_a + delta_b) , random_ = False)
 
 
 
@@ -611,6 +602,71 @@ experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adju
 #     comm_ca = C@A1 - A1@C
 #     print(comm_ab,"\n")
 
+# Benign non-convexity n = 2
+print("Benign non-convexity")
+n = 2
+a = [np.random.randint(100) for _ in range(n)]
+b = [np.random.randint(100) for _ in range(n)]
+c = [np.random.randint(100) for _ in range(n)]
+a, b, c = np.random.rand(n), np.random.rand(n), np.random.rand(n)
+A = np.diag(a)
+B = np.diag(b)
+C = np.diag(c)
+
+
+problem_ = prob.horn_problem(A, B, C, sort = True)
+A_eigs, B_eigs, C_eigs = problem_.reduced_data
+#print(A_eigs,"\n", B_eigs, "\n", C_eigs)
+alpha = np.sort(np.diagonal(A_eigs))[::-1]
+beta = np.sort(np.diagonal(B_eigs))[::-1]
+gamma = np.sort(np.diagonal(C_eigs))[::-1]
+# print(alpha)
+# print(beta)
+# print(gamma)
+
+Delta_alpha = alpha[0] - alpha[1]
+Delta_beta = beta[0] - beta[1]
+Delta_gamma = gamma[0] - gamma[1]
+opt_guess = 0
+
+if Delta_alpha <= Delta_beta:
+    if Delta_gamma > Delta_alpha + Delta_beta:
+        print("Delta_gamma > Delta_alpha + Delta_beta")
+        opt_guess = .5 * ((alpha[1] + beta[1] + gamma[0])**2 + (alpha[0] + beta[0] + gamma[1])**2)
+    elif Delta_gamma < Delta_beta - Delta_alpha:
+        print("Delta_gamma > Delta_beta - Delta_alpha")
+        opt_guess = .5 * ((alpha[0] + beta[1] + gamma[0])**2 + (alpha[1] + beta[0] + gamma[1])**2)
+    else:
+        print("Delta_gamma in between:", Delta_gamma, Delta_alpha + Delta_beta, Delta_beta - Delta_alpha)
+        opt_guess = .25 * (np.sum(alpha) + np.sum(beta) + np.sum(gamma))**2
+else:
+    if Delta_gamma > Delta_alpha + Delta_beta:
+        print("Delta_gamma > Delta_alpha + Delta_beta")
+        opt_guess = .5 * ((alpha[1] + beta[1] + gamma[0])**2 + (alpha[0] + beta[0] + gamma[1])**2)
+    elif Delta_gamma < Delta_alpha - Delta_beta:
+        print("Delta_gamma > Delta_beta - Delta_alpha")
+        opt_guess = .5 * ((alpha[1] + beta[0] + gamma[0])**2 + (alpha[0] + beta[1] + gamma[1])**2)
+    else:
+        print("Delta_gamma in between:", Delta_gamma, Delta_alpha + Delta_beta, Delta_beta - Delta_alpha)
+        opt_guess = .25 * np.trace(A + B + C)**2
+
+# Check eta_1, eta_2 do not depend on SOC point
+n_runs = 10
+print("eta_1, eta_2 for 10 runs...")
+for _ in range(n_runs):
+    optimizer = pymanopt.optimizers.TrustRegions(verbosity = 0)
+    results = optimizer.run(problem_)
+    q1, q2 = results.point[0], results.point[1]
+    A1 = basis_change(A, q1)
+    B2 = basis_change(B, q2)
+    M = A1 + B2
+    etas, _ = np.linalg.eig(M)
+    print(etas)
+    
+# Check optimal cost coincides with given formulas
+print("Final cost value vs. Theorem 2 given global minimum")
+print("Final cost: ", results.cost)
+print("Th. 2 results: ", opt_guess)
 
 
 
