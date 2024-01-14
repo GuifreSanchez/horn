@@ -9,6 +9,73 @@ import csv
 from plot_style import *
 import pymanopt.optimizers
 
+# Benign non-convexity n = 2
+def test_benign_non_convexity_n2():
+    print("Benign non-convexity test for n = 2")
+    n = 2
+    a = [np.random.randint(100) for _ in range(n)]
+    b = [np.random.randint(100) for _ in range(n)]
+    c = [np.random.randint(100) for _ in range(n)]
+    a, b, c = np.random.rand(n), np.random.rand(n), np.random.rand(n)
+    A = np.diag(a)
+    B = np.diag(b)
+    C = np.diag(c)
+
+
+    problem_ = prob.horn_problem(A, B, C, sort = True)
+    A_eigs, B_eigs, C_eigs = problem_.reduced_data
+    #print(A_eigs,"\n", B_eigs, "\n", C_eigs)
+    alpha = np.sort(np.diagonal(A_eigs))[::-1]
+    beta = np.sort(np.diagonal(B_eigs))[::-1]
+    gamma = np.sort(np.diagonal(C_eigs))[::-1]
+    # print(alpha)
+    # print(beta)
+    # print(gamma)
+
+    Delta_alpha = alpha[0] - alpha[1]
+    Delta_beta = beta[0] - beta[1]
+    Delta_gamma = gamma[0] - gamma[1]
+    opt_guess = 0
+
+    if Delta_alpha <= Delta_beta:
+        if Delta_gamma > Delta_alpha + Delta_beta:
+            print("Delta_gamma > Delta_alpha + Delta_beta")
+            opt_guess = .5 * ((alpha[1] + beta[1] + gamma[0])**2 + (alpha[0] + beta[0] + gamma[1])**2)
+        elif Delta_gamma < Delta_beta - Delta_alpha:
+            print("Delta_gamma > Delta_beta - Delta_alpha")
+            opt_guess = .5 * ((alpha[0] + beta[1] + gamma[0])**2 + (alpha[1] + beta[0] + gamma[1])**2)
+        else:
+            print("Delta_gamma in between:", Delta_gamma, Delta_alpha + Delta_beta, Delta_beta - Delta_alpha)
+            opt_guess = .25 * (np.sum(alpha) + np.sum(beta) + np.sum(gamma))**2
+    else:
+        if Delta_gamma > Delta_alpha + Delta_beta:
+            print("Delta_gamma > Delta_alpha + Delta_beta")
+            opt_guess = .5 * ((alpha[1] + beta[1] + gamma[0])**2 + (alpha[0] + beta[0] + gamma[1])**2)
+        elif Delta_gamma < Delta_alpha - Delta_beta:
+            print("Delta_gamma > Delta_beta - Delta_alpha")
+            opt_guess = .5 * ((alpha[1] + beta[0] + gamma[0])**2 + (alpha[0] + beta[1] + gamma[1])**2)
+        else:
+            print("Delta_gamma in between:", Delta_gamma, Delta_alpha + Delta_beta, Delta_beta - Delta_alpha)
+            opt_guess = .25 * np.trace(A + B + C)**2
+
+    # Check eta_1, eta_2 do not depend on SOC point
+    n_runs = 10
+    print("eta_1, eta_2 for 10 runs...")
+    for _ in range(n_runs):
+        optimizer = pymanopt.optimizers.TrustRegions(verbosity = 0, soc_analysis=False)
+        results = optimizer.run(problem_)
+        q1, q2 = results.point[0], results.point[1]
+        A1 = basis_change(A, q1)
+        B2 = basis_change(B, q2)
+        M = A1 + B2
+        etas, _ = np.linalg.eig(M)
+        print(etas)
+        
+    # Check optimal cost coincides with given formulas
+    print("Final cost value vs. Theorem 2 given global minimum")
+    print("Final cost: ", results.cost)
+    print("Th. 2 results: ", opt_guess)
+
 def right_diagonal_ones(n):
     x = np.zeros((n, n))
     for i in range(n):
@@ -99,10 +166,12 @@ if RUN_EXPERIMENTS:
 # basic_prob = prob.prob_non_solvable_2(N= N)
 # experiments.n_runs_2(basic_prob, runs = 50, runs_cost = 15, runs_grad = 15, adjust_scale=True)
 
-# print("Example of random non-solvable case")
-# Ns = [5]
-# ns = [25]
-# experiments.exp_non_solvable_2(Ns = Ns, ns = ns)
+print("Example of random non-solvable case")
+Ns = [5]
+ns = [25]
+experiments.exp_non_solvable_2(Ns = Ns, ns = ns)
+
+test_benign_non_convexity_n2()
 
 # print("Example of non-solvable (controlled) case")
 # Ns = [5]
@@ -667,7 +736,6 @@ for _ in range(n_runs):
 print("Final cost value vs. Theorem 2 given global minimum")
 print("Final cost: ", results.cost)
 print("Th. 2 results: ", opt_guess)
-
 
 
 

@@ -512,7 +512,6 @@ def correct_order_transformation(original_eigs, new_eigs):
 def check_second_order_optimality(problem_data, opt_point):
     A, B, C = problem_data[0], problem_data[1], problem_data[2]
 
-
     a, eigv_a = np.linalg.eig(A)
     b, eigv_b = np.linalg.eig(B)
     c, eigv_c = np.linalg.eig(C)
